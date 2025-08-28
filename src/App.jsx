@@ -37,6 +37,8 @@ function App() {
           placeholder="Search books..."
           className="flex-1 border p-2 rounded-l"
         />
+        
+
         <button
           onClick={searchBooks}
           className="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600"
@@ -44,8 +46,13 @@ function App() {
           Search
         </button>
       </div>
+      
+       {loading && (
+        <div className="flex justify-center my-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-blue-500"></div>
+        </div>
+      )}
 
-      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -64,6 +71,8 @@ function App() {
             <p>Author: {book.author_name?.join(", ") || "N/A"}</p>
             <p>First Published: {book.first_publish_year || "N/A"}</p>
           </div>
+          
+          
         ))}
       </div>
     </div>
