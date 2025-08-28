@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -15,70 +14,58 @@ function App() {
 
     try {
       const res = await fetch(
-        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}`
+        `https://openlibrary.org/search.json?title=${query}`
       );
       const data = await res.json();
-
-      if (data.docs.length === 0) {
-        setError("No books found.");
-      }
-      setBooks(data.docs.slice(0, 12)); // show 12 results
+      setBooks(data.docs.slice(0, 20)); 
     } catch {
-      setError("Failed to fetch books.");
+      setError("Failed to fetch books. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">
-        📚 Book Finder
-      </h1>
+    <div className="p-5 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4 text-center">Book Finder</h1>
 
-      <div className="flex w-full max-w-md mb-6">
+      <div className="flex mb-6">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Enter book title..."
-          className="flex-grow border p-2 rounded-l-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Search books..."
+          className="flex-1 border p-2 rounded-l"
         />
         <button
           onClick={searchBooks}
-          className="bg-blue-500 text-white px-4 rounded-r-md hover:bg-blue-600 transition"
+          className="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600"
         >
           Search
         </button>
       </div>
 
-      {loading && <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>}
-      {error && <p className="text-center text-red-500">{error}</p>}
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-5xl">
-        {books.map((book, index) => (
-          <li
-            key={index}
-            className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition flex flex-col items-center"
-          >
-            {book.cover_i ? (
-              <img
-                src={`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`}
-                alt={book.title}
-                className="h-60 w-auto object-contain mb-3 rounded"
-              />
-            ) : (
-              <div className="h-60 w-40 bg-gray-200 flex items-center justify-center text-gray-500 text-sm mb-3">
-                No Cover
-              </div>
-            )}
-            <h2 className="font-semibold text-lg text-center">{book.title}</h2>
-            <p className="text-sm text-gray-600 text-center">
-              {book.author_name ? book.author_name.join(", ") : "Unknown Author"}
-            </p>
-          </li>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {books.map((book) => (
+          <div key={book.key} className="border p-3 rounded shadow">
+            <img
+              src={
+                book.cover_i
+                  ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+                  : "https://via.placeholder.com/150x200?text=No+Cover"
+              }
+              alt={book.title}
+              className="w-full h-48 object-cover mb-2"
+            />
+            <h2 className="font-bold">{book.title}</h2>
+            <p>Author: {book.author_name?.join(", ") || "N/A"}</p>
+            <p>First Published: {book.first_publish_year || "N/A"}</p>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
